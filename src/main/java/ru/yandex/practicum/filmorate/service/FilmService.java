@@ -60,7 +60,7 @@ public class FilmService {
         if (film == null){
             throw new DataNotFound("Film with id " + id + " not found");
         }
-        return films.getFilmById(id);
+        return film;
     }
 
 }

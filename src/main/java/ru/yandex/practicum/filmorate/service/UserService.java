@@ -62,7 +62,7 @@ public class UserService {
         if (user == null){
             throw new DataNotFound("User with id " + id + " not found");
         }
-        return users.getUserById(id);
+        return user;
     }
 
     public List<User> getFriends(User user) {

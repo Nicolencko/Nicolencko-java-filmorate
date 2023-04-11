@@ -12,19 +12,19 @@ import static java.lang.Math.max;
 @Slf4j
 @Component
 public class InMemoryFilm implements FilmStorage {
-    Map<Long, Film> films = new HashMap<>();
-    Set<Long> ids = new HashSet<>();
-    Long id = 0L;
+    private final Map<Long, Film> films = new HashMap<>();
+    private final Set<Long> ids = new HashSet<>();
+    private Long id = 0L;
 
     public void createFilm(Film film) {
         FilmValidator.validateFilm(film);
-        log.info("Film added: {}", film);
         if(film.getId() == null){
            while (ids.contains(id)){
                id++;
            }
               film.setId(id++);
         }
+        log.info("Film added: {}", film);
         if(film.getLikesFromUsers() == null)
             film.setLikesFromUsers(new HashSet<>());
         if(film.getLikes() == null)
