@@ -14,7 +14,15 @@ public class UserValidator {
         }
     }
 
+    public static void checkWhitespacesLogin(String login){
+        if(login.contains(" ")){
+            log.info("Login contains whitespaces");
+            throw new ValidateException("Login contains whitespaces");
+        }
+    }
+
     public static void validateUser(User user) throws ValidateException{
+        checkWhitespacesLogin(user.getLogin());
         checkFutureBirthday(user.getBirthday());
     }
 
