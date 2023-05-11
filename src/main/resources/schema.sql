@@ -1,4 +1,4 @@
-/*drop table if exists film_category;
+drop table if exists film_category;
 drop table if exists film_rating;
 drop table if exists film_like;
 
@@ -6,7 +6,7 @@ drop table if exists category;
 drop table if exists rating;
 drop table if exists film;
 drop table if exists user_friend;
-drop table if exists users;*/
+drop table if exists users;
 CREATE TABLE IF NOT EXISTS film(
     film_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,

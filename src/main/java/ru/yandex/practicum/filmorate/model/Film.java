@@ -20,7 +20,7 @@ public class Film {
     private LocalDate releaseDate;
     @PositiveOrZero
     private Integer duration;
-    private List<Genre> genres;
+    private Set<Genre> genres;
     private MPA mpa;
 
     public Film(Long id, String name, String description, LocalDate releaseDate, Integer duration) {

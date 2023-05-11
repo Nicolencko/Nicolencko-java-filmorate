@@ -12,7 +12,7 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 import java.util.List;
 
 @RestController
-@RequestMapping
+@RequestMapping("/films")
 public class FilmController {
 
     private final FilmService films;
@@ -22,59 +22,38 @@ public class FilmController {
         this.films = films;
     }
 
-    @PostMapping("/films")
+    @PostMapping
     public Film createFilm(@Valid @RequestBody Film film) {
         films.createFilm(film);
         return film;
     }
 
-    @PutMapping("/films")
+    @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
         films.updateFilm(film);
         return film;
     }
-
-    @GetMapping("/genres")
-    public List<Genre> getGenres() {
-        return films.getGenres();
-    }
-
-    @GetMapping("/genres/{id}")
-    public Genre getGenre(@PathVariable("id") String id) {
-        return films.getGenreById(Long.parseLong(id));
-    }
-
-    @GetMapping("/mpa")
-    public List<MPA> getMPAs() {
-        return films.getMPAs();
-    }
-
-    @GetMapping("/mpa/{id}")
-    public MPA getMPA(@PathVariable("id") String id) {
-        return films.getMPAById(Long.parseLong(id));
-    }
-
-    @GetMapping("/films")
+    @GetMapping
     public List<Film> getFilms() {
         return films.getFilms();
     }
 
-    @GetMapping("/films/{id}")
+    @GetMapping("/{id}")
     public Film getFilm(@PathVariable("id") String id) {
         return films.getFilmById(Long.parseLong(id));
     }
 
-    @PutMapping("/films/{id}/like/{userId}")
+    @PutMapping("/{id}/like/{userId}")
     public void likeFilm(@PathVariable("id") String id, @PathVariable("userId") String userId) {
         films.likeFromUser(Long.parseLong(id), Long.parseLong(userId));
     }
 
-    @DeleteMapping("/films/{id}/like/{userId}")
+    @DeleteMapping("/{id}/like/{userId}")
     public void dislikeFilm(@PathVariable("id") String id, @PathVariable("userId") String userId) {
         films.dislikeFromUser(Long.parseLong(id), Long.parseLong(userId));
     }
 
-    @GetMapping("/films/popular")
+    @GetMapping("/popular")
     public List<Film> getTopFilms(@RequestParam(value = "count", defaultValue = "10", required = false) Integer count){
         return films.getTopFilms(count);
     }

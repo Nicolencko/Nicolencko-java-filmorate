@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.exception.DataNotFound;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.validate.UserValidator;
 
@@ -51,7 +51,7 @@ public class UserDbStorage implements UserStorage {
         String userExistSql = "SELECT user_id FROM users";
         List<Long> userIds = jdbcTemplate.queryForList(userExistSql, Long.class);
         if (!userIds.contains(user.getId())) {
-            throw new DataNotFound("User with id " + user.getId() + " not found");
+            throw new EntityNotFoundException("User with id " + user.getId() + " not found");
         }
         log.info("User {} updated", user);
         jdbcTemplate.update("UPDATE users SET login = ?, email = ?, name = ?, birth_date = ? WHERE user_id = ?",
@@ -63,7 +63,7 @@ public class UserDbStorage implements UserStorage {
         String userExistSql = "SELECT user_id FROM users";
         List<Long> userIds = jdbcTemplate.queryForList(userExistSql, Long.class);
         if (!userIds.contains(id)) {
-            throw new DataNotFound("User with id " + id + " not found");
+            throw new EntityNotFoundException("User with id " + id + " not found");
         }
         log.info("User with id {} found", id);
         return jdbcTemplate.queryForObject("SELECT * FROM users WHERE user_id = ?",
@@ -96,10 +96,10 @@ public class UserDbStorage implements UserStorage {
         String userExistSql = "SELECT user_id FROM users";
         List<Long> userIds = jdbcTemplate.queryForList(userExistSql, Long.class);
         if (!userIds.contains(userId)) {
-            throw new DataNotFound("User with id " + userId + " not found");
+            throw new EntityNotFoundException("User with id " + userId + " not found");
         }
         if (!userIds.contains(friendId)) {
-            throw new DataNotFound("User with id " + friendId + " not found");
+            throw new EntityNotFoundException("User with id " + friendId + " not found");
         }
         String friendsExistSql = "SELECT user_id, friend_id FROM USER_FRIEND";
         List<List<Long>> friendsIds = jdbcTemplate.query(friendsExistSql, (rs, rowNum) -> List.of(
@@ -128,7 +128,7 @@ public class UserDbStorage implements UserStorage {
         String userExistSql = "SELECT user_id FROM users WHERE user_id = ?";
         List<Long> userIds = jdbcTemplate.queryForList(userExistSql, new Object[]{userId}, Long.class);
         if (userIds.isEmpty() || userIds.get(0) == null) {
-            throw new DataNotFound("User with id " + userId + " not found");
+            throw new EntityNotFoundException("User with id " + userId + " not found");
         }
         String friendsSql = "SELECT u.user_id, u.login, u.email, u.name, u.birth_date FROM users u " +
                 "JOIN USER_FRIEND uf ON u.user_id = uf.friend_id WHERE uf.user_id = ?";

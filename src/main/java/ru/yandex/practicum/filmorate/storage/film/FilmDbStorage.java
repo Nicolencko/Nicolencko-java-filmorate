@@ -8,13 +8,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.exception.DataNotFound;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.MPA;
 import ru.yandex.practicum.filmorate.validate.FilmValidator;
 
 import java.sql.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.sql.PreparedStatement;
 import java.util.Objects;
@@ -49,10 +50,7 @@ public class FilmDbStorage implements FilmStorage {
         film.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
 
         if (film.getGenres() != null) {
-            List<Genre> uniqueGenres = film.getGenres().stream()
-                    .distinct()
-                    .toList();
-            for (Genre genre : uniqueGenres) {
+            for (Genre genre : film.getGenres()) {
                 jdbcTemplate.update("INSERT INTO film_category (film_id, category_id) VALUES (?, ?)",
                         film.getId(), genre.getId());
             }
@@ -69,18 +67,14 @@ public class FilmDbStorage implements FilmStorage {
         String filmExistSql = "SELECT film_id FROM film";
         List<Long> filmIds = jdbcTemplate.queryForList(filmExistSql, Long.class);
         if (!filmIds.contains(film.getId())) {
-            throw new DataNotFound("Film with id " + film.getId() + " not found");
+            throw new EntityNotFoundException("Film with id " + film.getId() + " not found");
         }
         log.info("Film updated: {}", film);
         jdbcTemplate.update("UPDATE film SET name = ?, description = ?, release_date = ?, duration = ? WHERE film_id = ?",
                 film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getId());
         if (film.getGenres() != null) {
-            List<Genre> uniqueGenres = film.getGenres().stream()
-                    .distinct()
-                    .toList();
-            film.setGenres(uniqueGenres);
             jdbcTemplate.update("DELETE FROM film_category WHERE film_id = ?", film.getId());
-            for (Genre genre : uniqueGenres) {
+            for (Genre genre : film.getGenres()) {
                 jdbcTemplate.update("INSERT INTO film_category (film_id, category_id) VALUES (?, ?)",
                         film.getId(), genre.getId());
             }
@@ -107,12 +101,12 @@ public class FilmDbStorage implements FilmStorage {
             Film film = jdbcTemplate.queryForObject(sql, new Object[]{id}, (rs, rowNum) -> new Film(rs.getLong("film_id"), rs.getString("name"), rs.getString("description"),
                     rs.getDate("release_date").toLocalDate(), rs.getInt("duration"),
                     null, new MPA(rs.getLong("rating_id"), rs.getString("rating_name"))));
-            List<Genre> genres = jdbcTemplate.query(categorySql, new Object[]{id}, (rs, rowNum) -> new Genre(rs.getLong("category_id"), rs.getString("category")));
+            Set<Genre> genres = new HashSet<>(jdbcTemplate.query(categorySql, new Object[]{id}, (rs, rowNum) -> new Genre(rs.getLong("category_id"), rs.getString("category"))));
+            assert film != null;
             film.setGenres(genres);
             return film;
-        }
-        catch (EmptyResultDataAccessException e) {
-            throw new DataNotFound("Film with id " + id + " not found");
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntityNotFoundException("Film with id " + id + " not found");
         }
     }
 
@@ -128,7 +122,7 @@ public class FilmDbStorage implements FilmStorage {
             String categoryFilm = "SELECT c.category_id, c.category FROM category c " +
                     "JOIN film_category fc ON c.category_id = fc.category_id " +
                     "WHERE fc.film_id = ?";
-            List<Genre> genres = jdbcTemplate.query(categoryFilm, new Object[]{film.getId()}, (rs, rowNum) -> new Genre(rs.getLong("category_id"), rs.getString("category")));
+            Set<Genre> genres = new HashSet<>(jdbcTemplate.query(categoryFilm, new Object[]{film.getId()}, (rs, rowNum) -> new Genre(rs.getLong("category_id"), rs.getString("category"))));
             film.setGenres(genres);
         }
         return films;
@@ -146,7 +140,7 @@ public class FilmDbStorage implements FilmStorage {
         String userExist = "SELECT user_id FROM users";
         List<Long> userIds = jdbcTemplate.queryForList(userExist, Long.class);
         if (!userIds.contains(userId)) {
-            throw new DataNotFound("User with id " + userId + " not found");
+            throw new EntityNotFoundException("User with id " + userId + " not found");
         }
 
 
@@ -205,7 +199,7 @@ public class FilmDbStorage implements FilmStorage {
             String categoryFilm = "SELECT c.category_id, c.category FROM category c " +
                     "JOIN film_category fc ON c.category_id = fc.category_id " +
                     "WHERE fc.film_id = ?";
-            List<Genre> genres = jdbcTemplate.query(categoryFilm, new Object[]{film.getId()}, (rs, rowNum) -> new Genre(rs.getLong("category_id"), rs.getString("category")));
+            Set<Genre> genres = new HashSet<>(jdbcTemplate.query(categoryFilm, new Object[]{film.getId()}, (rs, rowNum) -> new Genre(rs.getLong("category_id"), rs.getString("category"))));
             film.setGenres(genres);
         }
         return films;

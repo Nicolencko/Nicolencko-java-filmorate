@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import ru.yandex.practicum.filmorate.exception.DataNotFound;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
@@ -27,7 +27,7 @@ public class DefaultExceptionHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleDataNotFoundException(DataNotFound e) {
+    public ErrorResponse handleDataNotFoundException(EntityNotFoundException e) {
         return new ErrorResponse("Данные не найдены", e.getMessage());
     }
 

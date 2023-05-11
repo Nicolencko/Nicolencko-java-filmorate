@@ -23,15 +23,6 @@ public class User {
 
     private LocalDate birthday;
 
-
-
-    public List<User> getFriends() {
-        return null;
-    }
-
-    public void setFriends(Set<User> friends) {
-    }
-
     public User(){}
 
 

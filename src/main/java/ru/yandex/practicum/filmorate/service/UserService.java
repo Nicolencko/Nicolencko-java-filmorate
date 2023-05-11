@@ -4,14 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.DataNotFound;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUser;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.validate.UserValidator;
 
-import java.util.Set;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.List;
 
@@ -30,8 +28,6 @@ public class UserService {
         UserValidator.validateUser(user);
         UserValidator.validateUser(friend);
         users.createFriends(userId, friendId);
-        // users.updateUser(user);
-        // users.updateUser(friend);
     }
 
     public void deleteFriends(Long userId, Long friendId) {
@@ -40,8 +36,6 @@ public class UserService {
         UserValidator.validateUser(user);
         UserValidator.validateUser(friend);
         users.deleteFriends(userId, friendId);
-        // users.updateUser(user);
-        // users.updateUser(friend);
     }
 
     public List<User> getCommonFriends(Long userId, Long friendId) {
@@ -52,7 +46,7 @@ public class UserService {
         List<User> friends = getFriends(userId);
         List<User> friends2 = getFriends(friendId);
         if (friends == null || friends2 == null){
-            return null;
+            return new ArrayList<>();
         }
         return friends.stream().filter(friends2::contains).collect(Collectors.toList());
     }
@@ -64,7 +58,7 @@ public class UserService {
     public void updateUser(User user) {
         try {
             users.updateUser(user);
-        } catch (DataNotFound e) {
+        } catch (EntityNotFoundException e) {
             log.error("User with id {} not found", user.getId());
             throw e;
         }
@@ -74,7 +68,7 @@ public class UserService {
 
         User user = users.getUserById(id);
         if (user == null){
-            throw new DataNotFound("User with id " + id + " not found");
+            throw new EntityNotFoundException("User with id " + id + " not found");
         }
         return user;
     }
@@ -82,7 +76,7 @@ public class UserService {
     public List<User> getFriends(Long id) {
         User user = users.getUserById(id);
         if (user == null){
-            throw new DataNotFound("User with id " + id + " not found");
+            throw new EntityNotFoundException("User with id " + id + " not found");
         }
         return users.getFriends(id);
     }

@@ -4,20 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.DataNotFound;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.MPA;
-import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.film.InMemoryFilm;
 import ru.yandex.practicum.filmorate.validate.FilmValidator;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static java.lang.Math.max;
 
 @Slf4j
 @Service
@@ -52,7 +44,7 @@ public class FilmService {
         try {
             films.updateFilm(film);
         }
-        catch (DataNotFound e) {
+        catch (EntityNotFoundException e) {
             log.error("Film with id {} not found", film.getId());
             throw e;
         }
@@ -66,34 +58,14 @@ public class FilmService {
 
         Film film = films.getFilmById(id);
         if (film == null){
-            throw new DataNotFound("Film with id " + id + " not found");
+            throw new EntityNotFoundException("Film with id " + id + " not found");
         }
         return film;
     }
 
-    public List<Genre> getGenres() {
-        return films.getGenres();
-    }
 
-    public Genre getGenreById(Long id) {
-        Genre genre = films.getGenreById(id);
-        if (genre == null){
-            throw new DataNotFound("Genre with id " + id + " not found");
-        }
-        return genre;
-    }
 
-    public List<MPA> getMPAs() {
-        return films.getMPAs();
-    }
 
-    public MPA getMPAById(Long id) {
-        MPA mpa = films.getMPAById(id);
-        if (mpa == null){
-            throw new DataNotFound("MPA with id " + id + " not found");
-        }
-        return mpa;
-    }
 
 
 }

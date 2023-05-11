@@ -23,8 +23,6 @@ public class InMemoryUser implements UserStorage{
             user.setId(id++);
         }
         log.info("User added: {}", user);
-        if(user.getFriends() == null)
-            user.setFriends(new HashSet<>());
         users.put(user.getId(), user);
     }
 

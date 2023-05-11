@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.exception.DataNotFound;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MPA;
@@ -42,7 +42,7 @@ class FilmorateApplicationTests {
 
     @Test
     public void testFindUserByWrongId(){
-        assertThrows(DataNotFound.class, () -> userStorage.getUserById(100L));
+        assertThrows(EntityNotFoundException.class, () -> userStorage.getUserById(100L));
     }
 
     @Test
@@ -61,7 +61,7 @@ class FilmorateApplicationTests {
 
     @Test
     public void testFindFilmByWrongId(){
-        assertThrows(DataNotFound.class, () -> filmStorage.getFilmById(100L));
+        assertThrows(EntityNotFoundException.class, () -> filmStorage.getFilmById(100L));
     }
 
     @Test
